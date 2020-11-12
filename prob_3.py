@@ -12,32 +12,40 @@ Nsteps = 5000   # Number of time steps
 dt = 1          # time step (in seconds)
 dx = 1          # spacing of the spatial grid (in meters)
 
-v = -0.1        # bulk flow (in meters per seconds)
+u = -0.1        # bulk flow (in meters per seconds)
 ################################
 
-def fcts_advection_update(f, alpha):
+def fcts_advection_update(u, dt, dx):
     """
     FCTS: Forward-Time Central-Space is a first order finite differencing method. 
         This is the update to the advection equation 
         (without diffusion, pressure, gravity or other source 
         term).
-    alpha: v * dt / (2 * dx)
     """
-    f[1:-1] = f[1:-1] - alpha * (f[2:] - f[:-2])
-    return f
+    alpha = u * dt / (2 * dx)
+    def update(f):
+        f[1:-1] = f[1:-1] - alpha * (f[2:] - f[:-2])
+        return f
+    return update
 
-def lf_advection_update(f, alpha):
+def lf_advection_update(u, dt, dx):
     """
     LF: Lax-friedrichs, this is a first order, but stable, 
         method to solve the advection equation
     alpha: v * dt / (2 * dx)
     """
-    f[1:-1] = 0.5 * (f[2:] + f[:-2]) - alpha * (f[2:] - f[:-2])
-    return f
+    alpha = u * dt / (2 * dx)
+    def update(f):
+        f[1:-1] = 0.5 * (f[2:] + f[:-2]) - alpha * (f[2:] - f[:-2])
+        return f
+    return update
 
 
 def main():
-    alpha = v * dt / 2. / dx
+    # Initialize update functions
+    fcts_update = fcts_advection_update(u, dt, dx)
+    lf_update = lf_advection_update(u, dt, dx)
+
     x = np.arange(Ngrid) * dx    # spatial grid
 
     # Initial conditions (f(t=0, x) = x)
@@ -59,8 +67,8 @@ def main():
 
     # Simulation
     for _ in range(Nsteps):
-        f1 = fcts_advection_update(f1, alpha)
-        f2 = lf_advection_update(f2, alpha)
+        f1 = fcts_update(f1)
+        f2 = lf_update(f2)
 
         x1.set_ydata(f1)
         x2.set_ydata(f2)
