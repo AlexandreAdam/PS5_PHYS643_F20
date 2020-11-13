@@ -19,7 +19,7 @@ D2 = 2
 implicit = True # wether to use the implicit method or not
 ################################
 
-def diffusion_update(D, dt, dx, implicit=True):
+def diffusion_update(D, dt, dx, Ngrid, implicit=True):
     """
     D: Diffusion coefficient
     dt: time step between updates
@@ -53,8 +53,8 @@ def main():
     x = np.arange(Ngrid) * dx   # spatial grid
 
     # setup update equations with the right coefficients
-    d1_update = diffusion_update(D1, dt, dx)
-    d2_update = diffusion_update(D2, dt, dx)
+    d1_update = diffusion_update(D1, dt, dx, Ngrid)
+    d2_update = diffusion_update(D2, dt, dx, Ngrid)
     advection_update = lf_advection_update(u, dt, dx)
 
     # Initial conditions

@@ -32,7 +32,6 @@ def lf_advection_update(u, dt, dx):
     """
     LF: Lax-friedrichs, this is a first order, but stable, 
         method to solve the advection equation
-    alpha: v * dt / (2 * dx)
     """
     alpha = u * dt / (2 * dx)
     def update(f):
@@ -49,7 +48,7 @@ def main():
     x = np.arange(Ngrid) * dx    # spatial grid
 
     # Initial conditions (f(t=0, x) = x)
-    f1 = np.copy(x) * 1 / Ngrid  # for FCTS
+    f1 = np.copy(x)/Ngrid        # for FCTS
     f2 = np.copy(f1)             # for Lax-Friedrichs
 
     plt.ion()
