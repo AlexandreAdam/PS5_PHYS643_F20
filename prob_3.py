@@ -32,19 +32,21 @@ def current(f, u):
         J_right: Current of right interface (except boundaries)
         J_left: Current for left interface
     """
-    # we add a ghost boundary for each current vector
+    # Current vectors for each boundaries
     J_right = np.zeros(f.size)
     J_left = np.zeros(f.size)
 
     # Right interface of each cell
     outflow = u > 0
     inflow = u < 0
+    # rightmost boundary has no current
     J_right[:-1][outflow] = f[:-1][outflow] * u[outflow]
     J_right[:-1][inflow] = f[1:][inflow] * u[inflow]
 
     # left interface of each cell
     outflow = u < 0
     inflow = u > 0
+    # leftmost boundary has no current
     J_left[1:][outflow] = f[1:][outflow] * u[outflow]
     J_left[1:][inflow] = f[:-1][inflow] * u[inflow]
     return J_left, J_right
@@ -85,8 +87,6 @@ def donor_cell_advection(dt, dx, cs, Ngrid):
     return update
 
 def main(save):
-    def P(f1):
-        return cs**2 * f1
     # Initialize update functions
     update = donor_cell_advection(dt, dx, cs, Ngrid)
 
