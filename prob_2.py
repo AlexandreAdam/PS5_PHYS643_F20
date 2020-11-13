@@ -4,7 +4,7 @@ We solve the advection-diffusion equation and compare 2 different diffusion coef
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from prob_3 import lf_advection_update
+from prob_1 import lf_advection_update
 
 ########## Parameters ##########
 Ngrid = 50      # Number of spatial cells
