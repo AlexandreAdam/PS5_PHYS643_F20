@@ -2,6 +2,9 @@
 3. Advection equation
 This script compares the FCTS solution to the advection equation with 
 the Lax-Friedrichs solution
+
+@author: Alexandre Adam
+Nov. 12th 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt

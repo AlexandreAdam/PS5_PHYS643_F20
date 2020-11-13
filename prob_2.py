@@ -1,6 +1,9 @@
 """
 4. Advection-diffusion equation
 We solve the advection-diffusion equation and compare 2 different diffusion coefficient
+
+@author: Alexandre Adam
+Nov. 12th 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt

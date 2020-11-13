@@ -4,33 +4,36 @@ This script explore the motion of sound waves through a uniform density gas
 without gravity starting from a gaussian perturbation with different amplitudes.
 
 We use the Donor-Cell Advection framework (or finite volume element)
+
+@author: Alexandre Adam
+Nov. 12th 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 ########## Parameters ##########
-Ngrid = 51      # Number of spatial cells (must be odd)
+Ngrid = 50      # Number of spatial cells 
 Nsteps = 500    # Number of time steps
 dt = 1          # time step (in seconds)
 dx = 1          # spacing of the spatial grid (in meters)
 cs = 0.1        # speed of sound (meters per seconds)
 
-# parameters of the perturbation
-A1 = 0.1
+# parameters of the density perturbation
+A1 = 0.1 # Amplitude
 A2 = 0.5
-A3 = 2
-x0 = Ngrid * dx /2
+A3 = 5
+x0 = Ngrid * dx /2 # Position of the perturbation
 ################################
 
 
 def current(f, u):
     """
-        u: velocity at the interface of each cells (except rightmost and leftmost interface)
-        inflow: information received from (right/left) neighbor to the cell
-        outflow: information transmitted to (right/left) neighbor
-        J_right: Current of right interface (except boundaries)
-        J_left: Current for left interface
+    u: velocity at the interface of each cells (except rightmost and leftmost interface)
+    inflow: information received from (right/left) neighbor to the cell
+    outflow: information transmitted to (right/left) neighbor
+    J_right: Current of right interface (except boundaries)
+    J_left: Current for left interface
     """
     # Current vectors for each boundaries
     J_right = np.zeros(f.size)
@@ -58,13 +61,10 @@ def donor_cell_advection(dt, dx, cs, Ngrid):
     f1 = rho, density of the fluid (kilograms per meters^3)
     f2 = rho * u, matter current at the center of each cell 
     cs: sound speed (meters per seconds)
-    P = rho * cs^2, pressure in the center of each cells (in Pascals)
-    J: matter current at the boundary of each cells, (Ngrid+1)-vector
+    J: matter current at the boundary of each cells
     """
     alpha = dt/dx
     beta = alpha * cs**2
-    ri = slice(1, None, 2) # right interface 
-    li = slice(0, None, 2) # left interface 
     def update(f1, f2):
         u = 0.5 * (f2[:-1] / f1[:-1] + f2[1:] / f1[1:]) 
         J1_left, J1_right = current(f1, u)
@@ -96,6 +96,7 @@ def main(save):
     f1 = [A * np.exp(-0.5 * (x - x0)**2) + 0.1 for A in [A1, A2, A3]]
     f2 = [np.zeros_like(x, np.float32) for _ in range(3)]
 
+    # Setup the figure
     plt.ion()
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 4))
     ax1.set_title(f"Density, Amplitude = {A1} [kg/m$^3$]")
@@ -105,19 +106,18 @@ def main(save):
     x1, = ax1.plot(x, f1[0], "or")
 
     ax2.set_title(fr"Density, Amplitude = {A2} [kg/m$^3$]")
-    ax2.set_ylabel(r"$\rho u$ [kg m$^{-2}$ s$^{-1}$]")
     ax2.set_xlabel("x [m]")
     ax2.set_ylim(0, 1)
     x2, = ax2.plot(x, f1[1], "or")
 
     ax3.set_title(fr"Density, Amplitude = {A3} [kg/m$^3$]")
-    ax3.set_ylabel("P [Pa]")
     ax3.set_xlabel("x [m]")
     ax3.set_ylim(0, 1)
     x3, =ax3.plot(x, f1[2], "or")
 
-    plt.subplots_adjust(left=0.1, wspace=0.5)
     fig.canvas.draw()
+
+    plt.subplots_adjust(left=0.1, wspace=0.5)
     lines = [x1, x2, x3]
 
     def update_plot(num, f1, f2, lines):
